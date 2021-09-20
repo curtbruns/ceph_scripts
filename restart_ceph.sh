@@ -34,5 +34,8 @@ fi
 echo "Test User"
 ./bin/radosgw-admin  user info --uid testid
 
+echo "Creating test-bucket"
+/root/ceph_scripts/create_bucket.sh
+
 echo "Done!  Get to hacking..."
 exit 0
