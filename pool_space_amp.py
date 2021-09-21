@@ -5,14 +5,17 @@ import os
 from tabulate import tabulate
 os.chdir('/root/source/ceph/build')
 
+# cebruns: TODO: Only doing this for buckets data - need to add Heads / Tails pools once I figure that out
+# cebruns: TODO: What if it's an EC pool? 
 POOL="default.rgw.buckets.data"
+
 # First get replication factor from pool info
 # ./bin/ceph osd pool get default.rgw.buckets.index all -f json-pretty   # To get the "size" for replication and copies
 cmd_stat = subprocess.run(["./bin/ceph", "osd", "pool", "get", POOL, "all", "-f", "json-pretty"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
 pool_stats = json.loads(cmd_stat.stdout)
-print("Pool Stats: {}".format(pool_stats))
+#print("Pool Stats: {}".format(pool_stats))
 replication = pool_stats['size']
-print("Replication found: {}".format(replication))
+#print("Replication found: {}".format(replication))
 #print("Repl: {}".format(replication))
 
 # Next get pool stats
@@ -39,6 +42,6 @@ for pool in df_stats['pools']:
         space_amp_due_to_alloc_pct = ("{:2.2%}".format((1-((stored_data_with_repl / data_bytes_used )))))
         space_amp_total_pct = ("{:2.2%}".format((1-((stored_data / data_bytes_used )))))
         #print("Pool: {}, Objects: {}, Stored: {}, StoredWithRepl: {}, ActualBytesUsed: {}, SpaceAmp: {:2.2%}".format(pool['name'], pool['stats']['objects'], stored_data, stored_data_with_repl, data_bytes_used, float(space_amp)))
-        row = [[pool['name'], pool['stats']['objects'], stored_data, stored_data_with_repl, space_amp_replication_bytes, space_amp_replication_pct, data_bytes_used, total_bytes_diff, size_diff_after_repl, space_amp_due_to_alloc_pct, space_amp_total_pct]]
+        row = [[pool['name']+ " (Repl: " + str(replication) + ")", pool['stats']['objects'], stored_data, stored_data_with_repl, space_amp_replication_bytes, space_amp_replication_pct, data_bytes_used, total_bytes_diff, size_diff_after_repl, space_amp_due_to_alloc_pct, space_amp_total_pct]]
 headers = ["Pool",         "Objects",     "Stored", "ExpectedTotalWithRepl",  "SpaceAmpReplOnly",              "SpaceAmpRepl%",          "TotalStored",     "TotalBytesDiff", "ByteAmpDueToAllocSize", "SpaceAmpInPoolForAllocSize", "SpaceAmpTotal"]
 print(tabulate(row, headers))
