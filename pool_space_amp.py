@@ -32,15 +32,16 @@ for pool in df_stats['pools']:
         # Calculate how much should be stored including replicas
         stored_data_with_repl = pool['stats']['stored_data'] * replication
         # Bytes added just due to replication 
-        space_amp_replication_bytes = stored_data_with_repl - stored_data 
+        space_amp_replication_bytes = stored_data_with_repl - stored_data
         # Extra bytes that are not due to replication - due to alloc size
         size_diff_after_repl = data_bytes_used - stored_data_with_repl
         # Total bytes diff (includes repl and alloc overhead)
         total_bytes_diff = data_bytes_used - stored_data
         # Consider replication as space amp as well here
-        space_amp_replication_pct = ("{:2.2%}".format((1-(stored_data / stored_data_with_repl))))
-        space_amp_due_to_alloc_pct = ("{:2.2%}".format((1-((stored_data_with_repl / data_bytes_used )))))
-        space_amp_total_pct = ("{:2.2%}".format((1-((stored_data / data_bytes_used )))))
+        space_amp_replication_pct = ("{:2.2%}".format(space_amp_replication_bytes / stored_data))
+        # e.g. 4197, single replication: 
+        space_amp_due_to_alloc_pct = ("{:2.2%}".format((stored_data_with_repl - stored_data) / stored_data))
+        space_amp_total_pct = ("{:2.2%}".format((data_bytes_used - stored_data) / stored_data)) 
         #print("Pool: {}, Objects: {}, Stored: {}, StoredWithRepl: {}, ActualBytesUsed: {}, SpaceAmp: {:2.2%}".format(pool['name'], pool['stats']['objects'], stored_data, stored_data_with_repl, data_bytes_used, float(space_amp)))
         row = [[pool['name']+ " (Repl: " + str(replication) + ")", pool['stats']['objects'], stored_data, stored_data_with_repl, space_amp_replication_bytes, space_amp_replication_pct, data_bytes_used, total_bytes_diff, size_diff_after_repl, space_amp_due_to_alloc_pct, space_amp_total_pct]]
 headers = ["Pool",         "Objects",     "Stored", "ExpectedTotalWithRepl",  "SpaceAmpReplOnly",              "SpaceAmpRepl%",          "TotalStored",     "TotalBytesDiff", "ByteAmpDueToAllocSize", "SpaceAmpInPoolForAllocSize", "SpaceAmpTotal"]
