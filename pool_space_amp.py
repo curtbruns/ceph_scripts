@@ -40,9 +40,9 @@ for pool in df_stats['pools']:
         # Consider replication as space amp as well here
         space_amp_replication_pct = ("{:2.2%}".format(space_amp_replication_bytes / stored_data))
         # e.g. 4197, single replication: 
-        space_amp_due_to_alloc_pct = ("{:2.2%}".format((stored_data_with_repl - stored_data) / stored_data))
+        space_amp_due_to_alloc_pct = ("{:2.2%}".format((size_diff_after_repl / stored_data_with_repl)))
         space_amp_total_pct = ("{:2.2%}".format((data_bytes_used - stored_data) / stored_data)) 
         #print("Pool: {}, Objects: {}, Stored: {}, StoredWithRepl: {}, ActualBytesUsed: {}, SpaceAmp: {:2.2%}".format(pool['name'], pool['stats']['objects'], stored_data, stored_data_with_repl, data_bytes_used, float(space_amp)))
         row = [[pool['name']+ " (Repl: " + str(replication) + ")", pool['stats']['objects'], stored_data, stored_data_with_repl, space_amp_replication_bytes, space_amp_replication_pct, data_bytes_used, total_bytes_diff, size_diff_after_repl, space_amp_due_to_alloc_pct, space_amp_total_pct]]
-headers = ["Pool",         "Objects",     "Stored", "ExpectedTotalWithRepl",  "SpaceAmpReplOnly",              "SpaceAmpRepl%",          "TotalStored",     "TotalBytesDiff", "ByteAmpDueToAllocSize", "SpaceAmpInPoolForAllocSize", "SpaceAmpTotal"]
+headers = ["Pool"                                        ,         "Objects",                "Stored", "ExpectedTotalWithRepl",  "SpaceAmpReplOnly",              "SpaceAmpRepl%",       "TotalStored",   "TotalBytesDiff", "ByteAmpDueToAllocSize", "SpaceAmpInPoolForAllocSize", "SpaceAmpTotal"]
 print(tabulate(row, headers))

@@ -8,7 +8,7 @@ os.chdir('/root/source/ceph/build')
 object_list = subprocess.run(["./bin/radosgw-admin", "bucket", "list", "--bucket", "test-bucket"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
 objects = json.loads(object_list.stdout)
 rows = []
-headers = ["Name", "Size", "AccountedSize", "Diff", "ObjSize", "ManifestSize", "ManifestHeadSize", "ManifestHeadMax", "BeginStripeSize", "BeginCurStripe", "EndStripeSize", "EndCurStripe", "TotalRadosObjects"]
+headers = ["Name", "Size", "AccountedSize", "Diff", "ObjSize", "ManifestSize", "ManifestHeadSize", "ManifestHeadMax", "PoolHead", "PoolTails", "PlacementRule", "BeginStripeSize", "BeginCurStripe", "EndStripeSize", "EndCurStripe", "TotalRadosObjects"]
 total_manifest_size = 0
 total_rados_objects = 0
 for object in objects:
@@ -27,6 +27,9 @@ for object in objects:
     size_man = stats['manifest']['obj_size']
     size_head_man = stats['manifest']['head_size']
     size_head_man_max = stats['manifest']['max_head_size']
+    pool_tail_objects = stats['manifest']['tail_placement']['bucket']['name']
+    pool_head_object  = stats['manifest']['begin_iter']['location']['obj']['bucket']['name']
+    placement_rule    = stats['manifest']['begin_iter']['location']['placement_rule']
     begin_stripe_size = stats['manifest']['begin_iter']['stripe_size']
     begin_cur_stripe = stats['manifest']['begin_iter']['cur_stripe']
     end_stripe_size = stats['manifest']['end_iter']['stripe_size']
@@ -34,7 +37,7 @@ for object in objects:
     total_objects = end_cur_stripe+1
     total_rados_objects += total_objects
     total_manifest_size += size_man
-    rows.append([name, size_actual, size_accounted, size_diff, size_obj, size_man, size_head_man, size_head_man_max, begin_stripe_size, begin_cur_stripe, end_stripe_size, end_cur_stripe, total_objects])
+    rows.append([name, size_actual, size_accounted, size_diff, size_obj, size_man, size_head_man, size_head_man_max, pool_head_object, pool_tail_objects, placement_rule, begin_stripe_size, begin_cur_stripe, end_stripe_size, end_cur_stripe, total_objects])
     #print(name, size_actual, size_accounted, size_diff, size_obj, size_man, size_head_man, size_head_man_max, begin_stripe_size, begin_cur_stripe, end_stripe_size, end_cur_stripe)
     #print("Name: {}, Size: {}, AccountedSize: {}, Diff: {}, ObjSize: {}, ManifsetSize: {}, ManifestHeadSize: {}, ManifestHeadMax: {},".format(name, size_actual, size_accounted, size_diff))
 print('\n')

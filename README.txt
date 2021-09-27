@@ -61,3 +61,13 @@ It uses the "bucket_id" as the prefix for the rados object name:
 OUTPUT: 
 osdmap e226 pool 'default.rgw.buckets.data' (7) object '478abffd-7977-4b31-a7f3-0c95b25e99e0.4353.6_fiver-1' -> pg 7.d895e5c9 (7.9) -> up ([0], p0) acting ([0], p0)
 BOOM.....
+
+# Add device class of qlc
+
+# Move osd to new device class
+# Delete current class
+./bin/ceph osd crush rm-device-class osd.2 osd.1
+# Set new class
+./bin/ceph osd crush set-device-class qlc osd.2 osd.1
+
+
