@@ -44,7 +44,7 @@ for object in objects:
     #print("Name: {}, Size: {}, AccountedSize: {}, Diff: {}, ObjSize: {}, ManifsetSize: {}, ManifestHeadSize: {}, ManifestHeadMax: {},".format(name, size_actual, size_accounted, size_diff))
 print('\n')
 print(tabulate(rows, headers))
-headers = ['TotalObjects', 'TotalManifest']
+headers = ['TotalRADOSObjects', 'TotalManifest']
 rows = [[total_rados_objects, total_manifest_size]]
 print(tabulate(rows, headers))
 
@@ -55,7 +55,10 @@ placement_list.append('default-placement/STANDARD')
 
 for pr in placement_list:
 #    print("Placement_Rule: {}".format(pr))
-    storage_class = pr.split('default-placement/')[1]
+    if pr.find("/") != -1:
+        storage_class = pr.split('default-placement/')[1]
+    else:
+        continue
 #    print("Checking rule:  {} and SC: {}".format(pr, storage_class))
     sc_pool = subprocess.run(["./bin/radosgw-admin", "zone", "placement", "list"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
     stats = json.loads(sc_pool.stdout)

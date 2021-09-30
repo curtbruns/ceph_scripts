@@ -7,7 +7,9 @@ cd /root/source/ceph/build
 ./bin/radosgw-admin zone placement add --rgw-zone default --placement-id default-placement --storage-class QLC_CLASS --data-pool qlc_pool
 
 
-echo "MUST RESTART RGW NOW"
-echo "MUST RESTART RGW NOW"
-echo "MUST RESTART RGW NOW"
-echo "MUST RESTART RGW NOW"
+echo "RESTARTING RGW..."
+cd /root/ceph_scripts
+./restart_rgw.sh
+if [ $? -ne 0 ]; then
+	echo "Failed restarting RGW"
+fi

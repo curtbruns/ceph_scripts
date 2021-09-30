@@ -1,10 +1,12 @@
 #! /bin/bash
 
-if [ -n $1 ]; then
+POOL=$1
+#echo "Pool chosen: $POOL"
+
+if [ -z "$POOL" ]; then
 	echo "Add erasure or replicated on command-line for qlc pool to create"
 	exit -1
 fi
-POOL=$1
 if [ $POOL != "replicated" ]; then
 	if [ $POOL != "erasure" ]; then
 		echo "Neither replicated nor erasure found in: $POOL"
