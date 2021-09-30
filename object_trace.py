@@ -6,9 +6,10 @@ from tabulate import tabulate
 os.chdir('/root/source/ceph/build')
 #./bin/radosgw-admin bucket list --bucket test-bucket
 object_list = subprocess.run(["./bin/radosgw-admin", "bucket", "list", "--bucket", "test-bucket"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+placement_list = list()
 objects = json.loads(object_list.stdout)
 rows = []
-headers = ["Name", "Size", "AccountedSize", "Diff", "ObjSize", "ManifestSize", "ManifestHeadSize", "ManifestHeadMax", "PoolHead", "PoolTails", "PlacementRule", "BeginStripeSize", "BeginCurStripe", "EndStripeSize", "EndCurStripe", "TotalRadosObjects"]
+headers = ["Name", "Size", "AccountedSize", "Diff", "ObjSize", "ManifestSize", "ManifestHeadSize", "ManifestHeadMax", "BucketHead", "BucketTails", "PlacementRule", "BeginStripeSize", "BeginCurStripe", "EndStripeSize", "EndCurStripe", "TotalRadosObjects"]
 total_manifest_size = 0
 total_rados_objects = 0
 for object in objects:
@@ -30,6 +31,7 @@ for object in objects:
     pool_tail_objects = stats['manifest']['tail_placement']['bucket']['name']
     pool_head_object  = stats['manifest']['begin_iter']['location']['obj']['bucket']['name']
     placement_rule    = stats['manifest']['begin_iter']['location']['placement_rule']
+    placement_list.append(placement_rule)
     begin_stripe_size = stats['manifest']['begin_iter']['stripe_size']
     begin_cur_stripe = stats['manifest']['begin_iter']['cur_stripe']
     end_stripe_size = stats['manifest']['end_iter']['stripe_size']
@@ -46,3 +48,21 @@ headers = ['TotalObjects', 'TotalManifest']
 rows = [[total_rados_objects, total_manifest_size]]
 print(tabulate(rows, headers))
 
+rows = []
+# Add our STANDARD class to find it in placement list
+placement_list.append('default-placement/STANDARD')
+#print("placement_list: {}".format(placement_list))
+
+for pr in placement_list:
+#    print("Placement_Rule: {}".format(pr))
+    storage_class = pr.split('default-placement/')[1]
+#    print("Checking rule:  {} and SC: {}".format(pr, storage_class))
+    sc_pool = subprocess.run(["./bin/radosgw-admin", "zone", "placement", "list"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    stats = json.loads(sc_pool.stdout)
+#    print("Stats is: {}".format(stats))
+    storage_class_pool = stats[0]['val']['storage_classes'][storage_class]['data_pool']
+    rows.append([storage_class, storage_class_pool])
+#    rows = [['STANDARD', standard_pool], [storage_class, storage_class_pool]]
+
+headers = ['StorageClass', 'DataPool']
+print(tabulate(rows, headers))

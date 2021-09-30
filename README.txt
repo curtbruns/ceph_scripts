@@ -63,11 +63,104 @@ osdmap e226 pool 'default.rgw.buckets.data' (7) object '478abffd-7977-4b31-a7f3-
 BOOM.....
 
 # Add device class of qlc
-
 # Move osd to new device class
 # Delete current class
 ./bin/ceph osd crush rm-device-class osd.2 osd.1
 # Set new class
 ./bin/ceph osd crush set-device-class qlc osd.2 osd.1
 
+# Crush replicated rule for qlc devices
+./bin/ceph osd crush rule create-replicated qlc_rule default host qlc
 
+# Trying to auto-set the device class:
+in OSD section - this works and doesn't set device-class on new osds
+        ; cebruns
+        ;osd_class_update_on_start = false
+
+in OSD section, this does not work:
+        ; cebruns did not work
+        ;class:qlc4
+		and neither did crush_device_class:qlc4
+
+
+
+# Storage Targets and Placement stuff:
+./bin/radosgw-admin zonegroup placement list
+./bin/radosgw-admin zonegroup placement add --rgw-zonegroup default --placement-id default-placement --storage-class QLC_CLASS
+./bin/radosgw-admin zonegroup placement list
+[
+    {
+        "key": "default-placement",
+        "val": {
+            "name": "default-placement",
+            "tags": [],
+            "storage_classes": [
+                "QLC_CLASS",
+                "STANDARD"
+            ]
+        }
+    }
+]
+
+./bin/radosgw-admin zone placement  list
+[
+    {
+        "key": "default-placement",
+        "val": {
+            "index_pool": "default.rgw.buckets.index",
+            "storage_classes": {
+                "STANDARD": {
+                    "data_pool": "default.rgw.buckets.data"
+                }
+            },
+            "data_extra_pool": "default.rgw.buckets.non-ec",
+            "index_type": 0
+        }
+    }
+]
+
+# Point the GLACIER SC to the qlc_pool:
+./bin/radosgw-admin zone placement add --rgw-zone default --placement-id default-placement --storage-class GLACIER --data-pool qlc_pool
+
+# Using the S3API, we have these SCs available:
+Possible values:
+STANDARD
+REDUCED_REDUNDANCY
+STANDARD_IA
+ONEZONE_IA
+INTELLIGENT_TIERING
+GLACIER
+DEEP_ARCHIVE
+OUTPOSTS
+
+# Buckets -> Placement Targets
+# Create new placement-id 'newbie' to zonegroup:
+./bin/radosgw-admin zonegroup placement add --rgw-zonegroup default --placement-id newbie
+# Add info to zone
+radosgw-admin zone placement add  --rgw-zone default  --placement-id newbie --data-pool default.rgw.buckets.data  --index-pool default.rgw.buckets.index  --data-extra-pool default.rgw.buckets.non-ec
+# Add new SC to zonegroup:
+radosgw-admin zonegroup placement add  --rgw-zonegroup default  --placement-id newbie --storage-class GLACIER
+# Add SC to zone info:
+radosgw-admin zone placement add  --rgw-zone default  --placement-id newbie --storage-class GLACIER  --data-pool default.rgw.buckets.data
+
+# NOW WE HAVE TO RESTART OUR RGW!!
+../src/stop.sh rgw
+
+
+# Setup Erasure Coded pool for QLC device class
+To create a new jerasure erasure code profile:
+
+ceph osd erasure-code-profile set {name} \
+     plugin=jerasure \
+     k={data-chunks} \
+     m={coding-chunks} \
+     technique={reed_sol_van|reed_sol_r6_op|cauchy_orig|cauchy_good|liberation|blaum_roth|liber8tion} \
+     [crush-root={root}] \
+     [crush-failure-domain={bucket-type}] \
+     [crush-device-class={device-class}] \
+     [directory={directory}] \
+     [--force]
+
+# Decodes to:
+# Decodes to:
+./bin/ceph osd erasure-code-profile set qlc_ec plugin=jerasure k=2 m=1 technique=reed_sol_van crush-failure-domain=osd crush-device-class=qlc
