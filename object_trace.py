@@ -36,6 +36,12 @@ for object in objects:
     begin_cur_stripe = stats['manifest']['begin_iter']['cur_stripe']
     end_stripe_size = stats['manifest']['end_iter']['stripe_size']
     end_cur_stripe = stats['manifest']['end_iter']['cur_stripe']
+    key_for_rados = stats['manifest']['end_iter']['location']['obj']['key']['name']
+    namespace_rados = stats['manifest']['end_iter']['location']['obj']['key']['ns']
+    bucket_id_rados  = stats['manifest']['end_iter']['location']['obj']['bucket']['bucket_id']
+    print("Key for rados: {} and Bucket id: {}, namespace: {}".format(key_for_rados, bucket_id_rados, namespace_rados))
+#    sys.exit(0)
+    namespace_rados = stats['manifest']['end_iter']['location']['obj']['key']['ns']
     total_objects = end_cur_stripe+1
     total_rados_objects += total_objects
     total_manifest_size += size_man

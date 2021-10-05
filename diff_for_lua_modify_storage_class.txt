@@ -1,0 +1,79 @@
+diff --git a/src/common/options.cc b/src/common/options.cc
+index 96eabd2d94e..82c7c5914df 100644
+--- a/src/common/options.cc
++++ b/src/common/options.cc
+@@ -4413,6 +4413,7 @@ std::vector<Option> get_global_options() {
+     .add_see_also("bluestore_min_alloc_size"),
+ 
+     Option("bluestore_min_alloc_size_ssd", Option::TYPE_SIZE, Option::LEVEL_ADVANCED)
++//	.set_default(64_K)
+     .set_default(4_K)
+     .set_flag(Option::FLAG_CREATE)
+     .set_description("Default min_alloc_size value for non-rotational (solid state)  media")
+diff --git a/src/pybind/mgr/rook/rook-client-python b/src/pybind/mgr/rook/rook-client-python
+--- a/src/pybind/mgr/rook/rook-client-python
++++ b/src/pybind/mgr/rook/rook-client-python
+@@ -1 +1 @@
+-Subproject commit 0b46d500a741afabe5c4efd1bb07e6f8903f0ef0
++Subproject commit 0b46d500a741afabe5c4efd1bb07e6f8903f0ef0-dirty
+diff --git a/src/rgw/rgw_lua_request.cc b/src/rgw/rgw_lua_request.cc
+index ebf1edf7d58..3680c4a6e5b 100644
+--- a/src/rgw/rgw_lua_request.cc
++++ b/src/rgw/rgw_lua_request.cc
+@@ -640,12 +640,36 @@ struct HTTPMetaTable : public EmptyMetaTable {
+       pushstring(L, info->request_params);
+     } else if (strcasecmp(index, "Domain") == 0) {
+       pushstring(L, info->domain);
++    } else if (strcasecmp(index, "StorageClass") == 0) {
++      pushstring(L, info->storage_class);
+     } else {
+       throw_unknown_field(index, TableName());
+     }
+     return ONE_RETURNVAL;
+   }
++
++  static int NewIndexClosure(lua_State* L) {
++    auto info = reinterpret_cast<req_info*>(lua_touserdata(L, lua_upvalueindex(1)));
++
++    const char* index = luaL_checkstring(L, 2);
++
++    if (strcasecmp(index, "StorageClass") == 0) {
++      info->storage_class = luaL_checkstring(L, 3);
++	} else {
++      throw_unknown_field(index, TableName());
++	}
++    return NO_RETURNVAL;
++  }
+ };
++/*    } else if (strcasecmp(index, "RGWCode") == 0) {
++      err->ret = luaL_checkinteger(L, 3);
++    } else if (strcasecmp(index, "HTTPStatus") == 0) {
++      err->err_code.assign(luaL_checkstring(L, 3));
++    } else if (strcasecmp(index, "Message") == 0) {
++      err->message.assign(luaL_checkstring(L, 3));
++    }
++  }
++  */
+ 
+ struct CopyFromMetaTable : public EmptyMetaTable {
+   static std::string TableName() {return "CopyFrom";}
+diff --git a/src/test/librgw_file_xattr.cc b/src/test/librgw_file_xattr.cc
+index 0cf40471027..17392a35b71 100644
+--- a/src/test/librgw_file_xattr.cc
++++ b/src/test/librgw_file_xattr.cc
+@@ -93,6 +93,7 @@ namespace {
+     friend ostream& operator<<(ostream& os, const obj_rec& rec);
+   };
+ 
++  /* 
+   ostream& operator<<(ostream& os, const obj_rec& rec)
+   {
+     RGWFileHandle* rgw_fh = rec.rgw_fh;
+@@ -104,6 +105,7 @@ namespace {
+     }
+     return os;
+   }
++  cebruns - unused warning in compiler */
+ 
+   typedef std::vector<obj_rec> obj_vec;
+   obj_vec ovec;

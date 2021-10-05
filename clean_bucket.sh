@@ -6,3 +6,7 @@ cd /root/source/ceph/build
 
 echo "Running GC now...."
 ./bin/radosgw-admin gc process --include-all
+
+echo "Creating test-bucket again"
+cd /root/ceph_scripts
+./create_bucket.sh
