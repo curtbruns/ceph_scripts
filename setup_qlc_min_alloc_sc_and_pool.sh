@@ -44,3 +44,7 @@ check_fail
 echo "Creating QLC Storage Class for qlc_pool"
 ./create_QLC_sc.sh
 check_fail
+
+echo "Pushing the pre-req lua script"
+./push_pre_req_sc.lua
+check_fail

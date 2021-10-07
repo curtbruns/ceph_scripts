@@ -24,7 +24,7 @@ def get_erasure_extras(pool):
     return int(running_size)
 
 def calc_rep(pool, data):
-    #print("Calculating replicated data for pool: {} and stored data: {}".format(pool, data))
+    print("Calculating replicated data for pool: {} and stored data: {}".format(pool, data))
     #print("Replication Dict for this pool: {}".format(rep_dict[pool]))
     total_data = 0
     # Repl pool
@@ -34,7 +34,7 @@ def calc_rep(pool, data):
     # Nope - it's an EC pool
     except KeyError:
         code_block_data = int((data / int(rep_dict[pool]['k'])) * (int(rep_dict[pool]['m'])))
-        #print("Code_block_data: {}, totalData: {}".format(code_block_data, data+code_block_data))
+        print("Code_block_data: {}, totalData: {}".format(code_block_data, data+code_block_data))
         total_data = data+code_block_data
 
     return total_data
@@ -132,7 +132,8 @@ for our_pool in POOLS:
                 space_amp_replication_pct = ("{:2.2%}".format(space_amp_replication_bytes / (stored_data - data_bytes_extra_for_erasure )))
                 # e.g. 4197, single replication: 
                 space_amp_due_to_alloc_pct = ("{:2.2%}".format((size_diff_after_repl / stored_data_with_repl)))
-                space_amp_total_pct = ("{:2.2%}".format((data_bytes_used - stored_data) / stored_data)) 
+                space_amp_total_pct = ("{:2.2%}".format((data_bytes_used - stored_data) / stored_data))  # we subtract stored_data - it's our sunk cost of storing this data
+                #space_amp_total_pct = ("{:2.2%}".format((data_bytes_used ) / stored_data)) 
             #print("Pool: {}, Objects: {}, Stored: {}, StoredWithRepl: {}, ActualBytesUsed: {}, SpaceAmp: {:2.2%}".format(pool['name'], pool['stats']['objects'], stored_data, stored_data_with_repl, data_bytes_used, float(space_amp)))
             key = pool['name']
             #print ("Rep_dict is: {}".format(rep_dict[(pool['name'])]))
