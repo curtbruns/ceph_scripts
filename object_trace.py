@@ -22,7 +22,8 @@ for object in objects:
     size_actual =  object['meta']['size']
     size_accounted =  object['meta']['accounted_size']
     size_diff = size_accounted - size_actual
-    object_stat = subprocess.run(["./bin/radosgw-admin", "object", "stat", "--bucket", "test-bucket", "--object", name], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    object_stat = subprocess.run(["./bin/radosgw-admin", "object", "stat", "--bucket", "test-bucket", "--object", name], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, encoding='utf-8', errors='replace')
+#    object_stat.stdout = unicode(object_stat.stdout, errors='replace')
     stats = json.loads(object_stat.stdout)
     size_obj = stats['size']
     size_man = stats['manifest']['obj_size']

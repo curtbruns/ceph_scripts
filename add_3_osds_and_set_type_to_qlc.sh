@@ -64,5 +64,12 @@ else
 		echo "Failed to Create QLC Pool with qlc_ec rule"
 		exit -1
 	fi
+	echo "Setting application to RGW"
+	./bin/ceph osd pool application enable qlc_pool rgw
+	if [ $? -ne 0 ]; then
+		echo "Failed to Set Application on qlc_pool"
+		exit -1
+	fi
+
 fi
 

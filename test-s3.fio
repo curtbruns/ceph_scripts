@@ -3,7 +3,7 @@ ioengine=http
 name=test
 direct=1
 filename=/test-bucket/asdf-1
-http_verbose=1
+http_verbose=0
 https=off
 http_mode=s3
 http_s3_key=${S3_KEY}
@@ -14,11 +14,13 @@ group_reporting
 
 # With verify, this both writes and reads the object
 [create]
+numjobs=1
 rw=write
-bs=64k
-size=64k
+bs=10485760
+size=10485760
+#size=64k
 io_size=4k
-verify=sha256
+#verify=sha256
 
 #[trim]
 #stonewall

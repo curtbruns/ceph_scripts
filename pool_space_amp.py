@@ -11,7 +11,8 @@ def get_erasure_extras(pool):
     cmd_stat = subprocess.run(["./bin/rados", "-p", pool, "ls"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
     #print("Cmd_stat stdout: {}".format(cmd_stat.stdout))
     object_list = cmd_stat.stdout.replace(" ", "").split("\n")
-    #print("Object List: {}, pool: {}".format(object_list, pool))
+    #print("{} Objects in List: {}, pool: {}".format(len(object_list), object_list, pool))
+    print("{} Objects to Review in pool: {}".format(len(object_list), pool))
     for obj in object_list:
         if len(obj) == 0:
             continue
