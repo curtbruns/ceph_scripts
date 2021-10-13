@@ -8,7 +8,10 @@ os.chdir('/root/source/ceph/build')
 
 def as_csv(rows, headers):
     filename = 'pool_amp.csv'
+    # Go back to where script is located
+    os.chdir(sys.path[0])
     with open(filename, 'w') as csvfile:
+        print ("Writing csv")
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow([headers])
         csvwriter.writerows(rows)
