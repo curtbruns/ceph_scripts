@@ -164,3 +164,12 @@ ceph osd erasure-code-profile set {name} \
 # Decodes to:
 # Decodes to:
 ./bin/ceph osd erasure-code-profile set qlc_ec plugin=jerasure k=2 m=1 technique=reed_sol_van crush-failure-domain=osd crush-device-class=qlc
+
+
+RESETTING LOCAL MASTER TO UPSTREAM MASTER
+Your local master branch can be reset to the upstream Ceph master branch by running the following commands:
+git fetch ceph
+git checkout master
+git reset --hard ceph/master
+git push -u origin master
+

@@ -1,9 +1,17 @@
+import csv
 import json
-import sys
-import subprocess
 import os
+import subprocess
+import sys
 from tabulate import tabulate
 os.chdir('/root/source/ceph/build')
+
+def as_csv(rows, headers):
+    filename = 'pool_amp.csv'
+    with open(filename, 'w') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerow([headers])
+        csvwriter.writerows(rows)
 
 def get_erasure_extras(pool):
     running_size = 0
@@ -145,4 +153,5 @@ for our_pool in POOLS:
             row.append([pool['name']+ repl_info, pool['stats']['objects'], stored_data, data_bytes_extra_for_erasure, stored_data_with_repl, space_amp_replication_bytes, space_amp_replication_pct, data_bytes_used, total_bytes_diff, size_diff_after_repl, space_amp_due_to_alloc_pct, space_amp_total_pct])
 headers = ["Pool"                            ,         "RADOSObjects",       "Stored", "ExtraECBytes",             "ExpectedTotalWithRepl",  "SpaceAmpReplOnly",              "SpaceAmpRepl%",       "TotalStored",   "TotalBytesDiff", "ByteAmpDueToAllocSize", "SpaceAmpInPoolForAllocSize", "SpaceAmpTotal"]
 print(tabulate(row, headers))
+as_csv(row, headers)
 
