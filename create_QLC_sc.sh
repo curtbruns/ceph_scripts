@@ -1,7 +1,7 @@
 #! /bin/bash
 
 cd /root/source/ceph/build
-# First create zonegroup placement into
+# First create zonegroup placement info
 ./bin/radosgw-admin zonegroup placement add --rgw-zonegroup default --placement-id default-placement --storage-class QLC_CLASS
 # Now point it at the qlc_pool:
 ./bin/radosgw-admin zone placement add --rgw-zone default --placement-id default-placement --storage-class QLC_CLASS --data-pool qlc_pool

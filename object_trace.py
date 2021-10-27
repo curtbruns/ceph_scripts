@@ -40,7 +40,7 @@ for object in objects:
     key_for_rados = stats['manifest']['end_iter']['location']['obj']['key']['name']
     namespace_rados = stats['manifest']['end_iter']['location']['obj']['key']['ns']
     bucket_id_rados  = stats['manifest']['end_iter']['location']['obj']['bucket']['bucket_id']
-    print("Key for rados: {} and Bucket id: {}, namespace: {}".format(key_for_rados, bucket_id_rados, namespace_rados))
+    #print("Key for rados: {} and Bucket id: {}, namespace: {}".format(key_for_rados, bucket_id_rados, namespace_rados))
 #    sys.exit(0)
     namespace_rados = stats['manifest']['end_iter']['location']['obj']['key']['ns']
     total_objects = end_cur_stripe+1

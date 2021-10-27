@@ -14,7 +14,6 @@ if [ $POOL != "replicated" ]; then
 	fi
 fi
 
-
 cd /root/source/ceph/build
 ../src/vstart.sh --inc-osd 3
 echo "Adding OSDs"

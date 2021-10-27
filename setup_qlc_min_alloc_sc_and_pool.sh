@@ -32,9 +32,10 @@ check_fail
 cd $SCRIPT_DIR
 ./clean_bucket.sh
 
-echo "Setting Min Alloc to 64K before launching next OSDs"
+echo "Setting Min Alloc to 64K before launching next OSDs - new method with optimal_io_size setting"
 cd $SCRIPT_DIR
 ./set_min_alloc.sh
+##./set_use_optimal_bool_true.sh
 check_fail
 
 echo "Adding 3 OSDs and setting Device class to qlc"

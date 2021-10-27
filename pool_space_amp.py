@@ -11,9 +11,9 @@ def as_csv(rows, headers):
     # Go back to where script is located
     os.chdir(sys.path[0])
     with open(filename, 'w') as csvfile:
-        print ("Writing csv")
+        #print ("Writing csv")
         csvwriter = csv.writer(csvfile)
-        csvwriter.writerow([headers])
+        csvwriter.writerow(headers)
         csvwriter.writerows(rows)
 
 def get_erasure_extras(pool):
