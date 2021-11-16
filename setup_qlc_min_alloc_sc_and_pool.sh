@@ -13,8 +13,8 @@ POOL=$1
 #echo "Pool chosen: $POOL"
 
 if [ -z "$POOL" ]; then
-    echo "Add erasure or replicated on command-line for qlc pool to create"
-    exit -1
+    echo "Defaulting to Erasure Pool"
+	POOL=erasure
 fi
 
 echo "Setup default.rgw.buckets.data to use replicated rule and ssd class"
@@ -35,7 +35,7 @@ cd $SCRIPT_DIR
 echo "Setting Min Alloc to 64K before launching next OSDs - new method with optimal_io_size setting"
 cd $SCRIPT_DIR
 ./set_min_alloc.sh
-##./set_use_optimal_bool_true.sh
+#./set_use_optimal_bool_true.sh
 check_fail
 
 echo "Adding 3 OSDs and setting Device class to qlc"
@@ -46,6 +46,7 @@ echo "Creating QLC Storage Class for qlc_pool"
 ./create_QLC_sc.sh
 check_fail
 
-echo "Pushing the pre-req lua script"
-./push_pre_req_sc.lua
-check_fail
+echo "NOT PUSHING PRE-REQ AT THIS POINT"
+#echo "Pushing the pre-req lua script"
+#./push_pre_req_sc.lua
+#check_fail
